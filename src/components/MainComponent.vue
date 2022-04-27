@@ -20,12 +20,13 @@
       class="barElement"
       v-for="(item, index) in showingArray"
       :key="index"
-      :style="{ height: number + 'px' }"
+      :style="{ height: number + 'rem' }"
     ></div>
   </div>
 </template>
 
 <script>
+import { onMounted } from '@vue/runtime-core';
 export default {
   name: 'MainComponent',
   setup() {
@@ -39,22 +40,33 @@ export default {
       'Heap Sort',
     ];
 
-    function onChange(event) {
-      console.log(event);
-      let size = Number(event.target.value);
-      while (showingArray.length < size) {
-        let rndNumber = Math.ceil(Math.random() * 500);
-        let exists = false;
-        for (let i = 0; i < showingArray.length; i++) {
-          if (showingArray[i] == rndNumber) {
-            exists = true;
-            break;
-          }
-        }
-        if (!exists) {
-          showingArray[size] = rndNumber;
-        }
+    onMounted(() => {
+      for (let i = 0; i < 100; i++) {
+        showingArray.push(Math.floor(Math.random() * 100) + 1);
       }
+    });
+
+    function onChange(event) {
+      showingArray = [];
+      console.log(event.target.value);
+      let size = Number.parseInt(event.target.value);
+      console.log(size);
+      for (let i = 0; i < size; i++) {
+        showingArray.push(Math.floor(Math.random() * 500) + 1);
+      }
+      // while (showingArray.length < size) {
+      //   let rndNumber = Math.ceil(Math.random() * 500);
+      //   let exists = false;
+      //   for (let i = 0; i < showingArray.length; i++) {
+      //     if (showingArray[i] == rndNumber) {
+      //       exists = true;
+      //       break;
+      //     }
+      //   }
+      //   if (!exists) {
+      //     showingArray[size] = rndNumber;
+      //   }
+      // }
     }
 
     function selectionSort(array) {
@@ -189,5 +201,19 @@ a {
 .actions {
   display: inline-flex;
   gap: 0.5rem;
+}
+
+.container {
+  display: block;
+  position: fixed;
+  left: 100px;
+  min-height: 50rem;
+  min-width: 50rem;
+}
+.barElement {
+  width: 20px;
+  background-color: black;
+  display: inline-block;
+  margin: 0 5px;
 }
 </style>
