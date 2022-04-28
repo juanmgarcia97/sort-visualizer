@@ -1,29 +1,35 @@
 <template>
   <h1>Sorting Algorithm Visualizer</h1>
-  <!-- <button @click="bubbleSort()">Bubble Sort</button> -->
-  <select name="Algorithms" id="Algorithms" @change="getAlgorithm">
-    <option :selected="true" disabled>Choose an algorithm</option>
-    <option :value="alg" v-for="(alg, index) in algorithms" :key="index">
-      {{ alg }}
-    </option>
-  </select>
-  <select name="Size" id="Size" @change="getSize">
-    <option :selected="true" disabled>Choose an array size</option>
-    <option :value="size" v-for="(size, index) in sizesOptions" :key="index">
-      {{ size }}
-    </option>
-  </select>
-  <button @click="fillArray">Shuffle</button>
-  <button @click="startSorting">Start</button>
+  <div class="actions">
+    <select name="Algorithms" id="Algorithms" @change="getAlgorithm">
+      <option :selected="true" disabled>Choose an algorithm</option>
+      <option :value="alg" v-for="(alg, index) in algorithms" :key="index">
+        {{ alg }}
+      </option>
+    </select>
+    <select name="Size" id="Size" @change="getSize">
+      <option :selected="true" disabled>Choose an array size</option>
+      <option :value="size" v-for="(size, index) in sizesOptions" :key="index">
+        {{ size }}
+      </option>
+    </select>
+    <button @click="fillArray">Shuffle</button>
+    <button @click="startSorting">Start</button>
+  </div>
 
   <div class="container" v-if="array.length > 0">
-    <!-- Loop through array numbers and display their height. -->
     <div
       class="bar"
       v-for="(number, index) in array"
       :key="index"
       :style="{ minHeight: number + 'px' }"
     ></div>
+  </div>
+  <div class="no-data" v-else>
+    <h3>
+      Here you will see the array of size you choose, please select a size and
+      fill it!
+    </h3>
   </div>
 </template>
 
@@ -197,5 +203,14 @@ export default {
   margin: 0 2px;
   border-radius: 2rem 2rem 0 0;
   transition: all 0.7s ease-in;
+}
+.actions {
+  display: inline-flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.no-data {
+  padding-top: 20rem;
 }
 </style>
