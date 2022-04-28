@@ -1,36 +1,42 @@
 <template>
   <h1>Sorting Visualizer</h1>
   <div class="actions">
-    <select name="Algorithms" id="">
+    <select name="Algorithms" id="" @change="getAlgorithm">
       <option :selected="true" disabled>Choose an algorithm</option>
       <option :value="alg" v-for="(alg, index) in algorithms" :key="index">
         {{ alg }}
       </option>
     </select>
-    <select name="Size" id="" @change="onChange">
+    <select name="Size" id="" @change="getSize">
       <option :selected="true" disabled>Choose an array size</option>
       <option :value="size" v-for="(size, index) in sizesOptions" :key="index">
         {{ size }}
       </option>
     </select>
-    <button>Start</button>
+    <button @click="fillArray">Fill</button>
+    <button @click="startSorting">Start</button>
   </div>
-  <div class="container">
+  <div class="container" v-if="showingArray.length > 0">
     <div
       class="barElement"
       v-for="(item, index) in showingArray"
       :key="index"
-      :style="{ height: number + 'rem' }"
+      :style="{
+        minHeight: item + 'px',
+        minWidth: 0.4 + 'px',
+      }"
     ></div>
   </div>
 </template>
 
 <script>
-import { onMounted } from '@vue/runtime-core';
+import { ref } from '@vue/reactivity';
+// import { onMounted } from '@vue/runtime-core';
 export default {
   name: 'MainComponent',
   setup() {
-    let showingArray = [];
+    const showingArray = ref([]);
+    let algorithmSelected = '';
     const sizesOptions = [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     const algorithms = [
       'Selection Sort',
@@ -40,36 +46,60 @@ export default {
       'Heap Sort',
     ];
 
-    onMounted(() => {
-      for (let i = 0; i < 100; i++) {
-        showingArray.push(Math.floor(Math.random() * 100) + 1);
-      }
-    });
+    // onMounted(() => {
+    //   for (let i = 0; i < 30; i++) {
+    //     showingArray.push(Math.floor(Math.random() * 100) + 1);
+    //   }
+    // });
 
-    function onChange(event) {
-      showingArray = [];
-      console.log(event.target.value);
-      let size = Number.parseInt(event.target.value);
-      console.log(size);
-      for (let i = 0; i < size; i++) {
-        showingArray.push(Math.floor(Math.random() * 500) + 1);
-      }
-      // while (showingArray.length < size) {
-      //   let rndNumber = Math.ceil(Math.random() * 500);
-      //   let exists = false;
-      //   for (let i = 0; i < showingArray.length; i++) {
-      //     if (showingArray[i] == rndNumber) {
-      //       exists = true;
-      //       break;
-      //     }
-      //   }
-      //   if (!exists) {
-      //     showingArray[size] = rndNumber;
-      //   }
-      // }
+    function getAlgorithm(event) {
+      algorithmSelected = event.target.value;
+      console.log(algorithmSelected);
     }
 
-    function selectionSort(array) {
+    function getSize(event) {
+      showingArray.value.length = Number(event.target.value);
+      console.log(showingArray.value.length);
+    }
+
+    async function startSorting() {
+      switch (algorithmSelected) {
+        case 'Selection Sort':
+          await selectionSort(showingArray.value);
+          break;
+        case 'Insertion Sort':
+          await insertionSort(showingArray.value);
+          break;
+        case 'Bubble Sort':
+          await bubbleSort(showingArray.value);
+          break;
+        case 'Quick Sort':
+          await quickSort(showingArray.value);
+          break;
+        case 'Heap Sort':
+          await heapSort(showingArray.value);
+          break;
+      }
+    }
+
+    function fillArray() {
+      let size = showingArray.value.length;
+      while (showingArray.value.length < size) {
+        let rndNumber = Math.ceil(Math.random() * 100);
+        let exists = false;
+        for (let i = 0; i < showingArray.value.length; i++) {
+          if (showingArray.value[i] === rndNumber) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          showingArray.value[size] = rndNumber;
+        }
+      }
+    }
+
+    async function selectionSort(array) {
       let size = array.length;
       for (let i = 0; i < size - 1; i++) {
         let min = i;
@@ -79,11 +109,12 @@ export default {
         let temp = array[i];
         array[i] = array[min];
         array[min] = temp;
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
       return array;
     }
 
-    function insertionSort(array) {
+    async function insertionSort(array) {
       let size = array.length;
       let key, j;
       for (let i = 1; i < size; i++) {
@@ -94,6 +125,7 @@ export default {
           j = j - 1;
         }
         array[j + 1] = key;
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
       return array;
     }
@@ -113,22 +145,22 @@ export default {
       return array;
     }
 
-    function heapify(array, size, index) {
+    async function heapify(array, size, index) {
       let max = index;
       let left = 2 * index + 1;
       let right = 2 * index + 2;
       if (left < size && array[left] > array[max]) max = left;
       if (right < size && array[right] > array[max]) max = right;
-      if (max != index) {
+      if (max !== index) {
         let temp = array[index];
         array[index] = array[max];
         array[max] = temp;
-
+        await new Promise((resolve) => setTimeout(resolve, 10));
         return heapify(array, size, max);
       }
     }
 
-    function quickSort(array, start, end) {
+    async function quickSort(array, start, end) {
       if (start === undefined) {
         start = 0;
         end = array.length - 1;
@@ -145,13 +177,14 @@ export default {
           let temp = array[start];
           array[start] = array[end];
           array[end] = temp;
+          await new Promise((resolve) => setTimeout(resolve, 10));
         }
       }
       quickSort(array, rStart, start - 1);
       quickSort(array, start, rEnd);
     }
 
-    function bubbleSort(array) {
+    async function bubbleSort(array) {
       let size = array.length;
       let i, j;
       for (i = 0; i < size - 1; i++) {
@@ -160,6 +193,7 @@ export default {
             let temp = array[j];
             array[j] = array[j + 1];
             array[j + 1] = temp;
+            await new Promise((resolve) => setTimeout(resolve, 10));
           }
         }
       }
@@ -172,7 +206,10 @@ export default {
       bubbleSort,
       heapSort,
       quickSort,
-      onChange,
+      fillArray,
+      getAlgorithm,
+      getSize,
+      startSorting,
       showingArray,
       sizesOptions,
       algorithms,
@@ -205,13 +242,13 @@ a {
 
 .container {
   display: block;
-  position: fixed;
-  left: 100px;
-  min-height: 50rem;
-  min-width: 50rem;
+  justify-content: center;
+  margin: 5rem 20rem;
+  min-height: 20rem;
+  min-width: 20rem;
 }
 .barElement {
-  width: 20px;
+  width: 0.5rem;
   background-color: black;
   display: inline-block;
   margin: 0 5px;
