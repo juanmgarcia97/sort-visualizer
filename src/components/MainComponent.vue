@@ -34,12 +34,14 @@
 </template>
 
 <script>
+import { AlgorithmService } from '../services/algorithmService';
 export default {
   name: 'App',
   data() {
     return {
       array: [],
       size: 0,
+      service: new AlgorithmService(),
       algorithmSelected: '',
       sizesOptions: [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100],
       algorithms: [
@@ -56,19 +58,19 @@ export default {
     async startSorting() {
       switch (this.algorithmSelected) {
         case 'Selection Sort':
-          await this.selectionSort();
+          await this.service.selectionSort(this.array);
           break;
         case 'Insertion Sort':
-          await this.insertionSort();
+          await this.service.insertionSort(this.array);
           break;
         case 'Bubble Sort':
-          await this.bubbleSort();
+          await this.service.bubbleSort(this.array);
           break;
         case 'Quick Sort':
-          await this.quickSort(this.array, 0, this.size - 1);
+          await this.service.quickSort(this.array, 0, this.size - 1);
           break;
         case 'Heap Sort':
-          await this.heapSort();
+          await this.service.heapSort(this.array);
           break;
       }
     },
@@ -88,98 +90,6 @@ export default {
     },
     getRndInteger(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
-    },
-    async bubbleSort() {
-      let i, j;
-      for (i = 0; i < this.size - 1; i++) {
-        for (j = 0; j < this.size - i - 1; j++) {
-          if (this.array[j] > this.array[j + 1]) {
-            let temp = this.array[j];
-            this.array[j] = this.array[j + 1];
-            this.array[j + 1] = temp;
-            await this.sleep();
-          }
-        }
-      }
-    },
-    async selectionSort() {
-      let size = this.array.length;
-      for (let i = 0; i < size - 1; i++) {
-        let min = i;
-        for (let j = i + 1; j < size; j++) {
-          if (this.array[j] < this.array[min]) min = j;
-        }
-        let temp = this.array[i];
-        this.array[i] = this.array[min];
-        this.array[min] = temp;
-        await this.sleep();
-      }
-    },
-    async insertionSort() {
-      let size = this.array.length;
-      let key, j;
-      for (let i = 1; i < size; i++) {
-        key = this.array[i];
-        j = i - 1;
-        while (j >= 0 && this.array[j] > key) {
-          this.array[j + 1] = this.array[j];
-          j = j - 1;
-        }
-        this.array[j + 1] = key;
-        await this.sleep();
-      }
-    },
-    async quickSort(array, start, end) {
-      if (start === undefined) {
-        start = 0;
-        end = array.length - 1;
-      } else if (start >= end) {
-        return array;
-      }
-      let rStart = start,
-        rEnd = end;
-      let pivot = array[Math.floor(Math.random() * (end - start + 1) + start)];
-      while (start < end) {
-        while (array[start] <= pivot) start++;
-        while (array[end] > pivot) end--;
-        if (start < end) {
-          let temp = array[start];
-          array[start] = array[end];
-          array[end] = temp;
-          await this.sleep();
-        }
-      }
-      this.quickSort(array, rStart, start - 1);
-      this.quickSort(array, start, rEnd);
-    },
-    async heapSort() {
-      let size = this.array.length;
-      for (let i = Math.floor(size / 2 - 1); i >= 0; i--) {
-        this.heapify(this.array, size, i);
-      }
-      for (let i = size - 1; i >= 0; i--) {
-        let temp = this.array[0];
-        this.array[0] = this.array[i];
-        this.array[i] = temp;
-        await this.sleep();
-        this.heapify(this.array, i, 0);
-      }
-    },
-    async heapify(array, size, index) {
-      let max = index;
-      let left = 2 * index + 1;
-      let right = 2 * index + 2;
-      if (left < size && array[left] > array[max]) max = left;
-      if (right < size && array[right] > array[max]) max = right;
-      if (max !== index) {
-        let temp = array[index];
-        array[index] = array[max];
-        array[max] = temp;
-        this.heapify(array, size, max);
-      }
-    },
-    sleep() {
-      return new Promise((resolve) => setTimeout(resolve, 100));
     },
   },
   created() {
