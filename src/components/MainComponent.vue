@@ -13,13 +13,13 @@
         {{ size }}
       </option>
     </select>
-    <button @click="fillArray">Shuffle</button>
+    <button @click="fillArray">Fill & Shuffle</button>
     <button @click="startSorting">Start</button>
   </div>
 
   <div class="container" v-if="array.length > 0">
     <div
-      class="bar"
+      :class="classItems"
       v-for="(number, index) in array"
       :key="index"
       :style="{ minHeight: number + 'px' }"
@@ -34,42 +34,50 @@
 </template>
 
 <script>
-import { AlgorithmService } from '../services/algorithmService';
+import { AlgorithmService } from "../services/algorithmService";
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
       array: [],
       size: 0,
       service: new AlgorithmService(),
-      algorithmSelected: '',
+      algorithmSelected: "",
       sizesOptions: [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100],
       algorithms: [
-        'Selection Sort',
-        'Insertion Sort',
-        'Bubble Sort',
-        'Quick Sort',
-        'Heap Sort',
+        "Selection Sort",
+        "Insertion Sort",
+        "Bubble Sort",
+        "Quick Sort",
+        "Heap Sort",
       ],
     };
   },
-  components: {},
+  computed: {
+    classItems() {
+      return {
+        bar: !this.service.inProgress && !this.service.isOver,
+        progress: this.service.inProgress && !this.service.isOver,
+        ready: !this.service.inProgress && this.service.isOver,
+      }
+    }
+  },
   methods: {
     async startSorting() {
       switch (this.algorithmSelected) {
-        case 'Selection Sort':
+        case "Selection Sort":
           await this.service.selectionSort(this.array);
           break;
-        case 'Insertion Sort':
+        case "Insertion Sort":
           await this.service.insertionSort(this.array);
           break;
-        case 'Bubble Sort':
+        case "Bubble Sort":
           await this.service.bubbleSort(this.array);
           break;
-        case 'Quick Sort':
+        case "Quick Sort":
           await this.service.quickSort(this.array, 0, this.size - 1);
           break;
-        case 'Heap Sort':
+        case "Heap Sort":
           await this.service.heapSort(this.array);
           break;
       }
@@ -82,8 +90,9 @@ export default {
     },
 
     fillArray() {
-      // populate array with random numbers between 5 and 750
       this.array = [];
+      this.service.inProgress = false
+      this.service.isOver = false
       for (let i = 0; i < this.size; i++) {
         this.array.push(this.getRndInteger(5, 750));
       }
@@ -112,7 +121,33 @@ export default {
   display: inline-block;
   margin: 0 2px;
   border-radius: 2rem 2rem 0 0;
-  transition: all 0.7s ease-in;
+  transition: all 0.4s ease-in;
+}
+
+.progress {
+  width: 5px;
+  background-color: lightcoral;
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 2rem 2rem 0 0;
+  transition: all 0.4s ease-in;
+}
+.ready {
+  width: 5px;
+  background-color: lightgreen;
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 2rem 2rem 0 0;
+  transition: all 0.4s ease-in;
+}
+.element {
+  width: 5px;
+  background-color: black;
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 2rem 2rem 0 0;
+  transition: all 0.4s ease-in;
+
 }
 .actions {
   display: inline-flex;
